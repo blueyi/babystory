@@ -51,7 +51,8 @@ class Playlist(Gtk.Box):
         self.left_iconview.set_pixbuf_column(0)
         self.left_iconview.set_text_column(2)
         self.left_iconview.props.item_width = 130
-        self.left_iconview.props.activate_on_single_click = True
+        if Gtk.MINOR_VERSION > 6:
+            self.left_iconview.props.activate_on_single_click = True
         self.left_iconview.connect('button-press-event',
                 self.on_left_iconview_button_pressed)
         left_window.add(self.left_iconview)
@@ -61,8 +62,6 @@ class Playlist(Gtk.Box):
         self.left_menu_delete.connect('activate',
                 self.on_left_menu_delete_activated)
         self.left_menu.append(self.left_menu_delete)
-        sep_item = Gtk.SeparatorMenuItem()
-        self.left_menu.append(sep_item)
         self.left_menu_cache = Gtk.MenuItem('Cache')
         self.left_menu_cache.connect('activate',
                 self.on_left_menu_cache_activated)
@@ -134,8 +133,8 @@ class Playlist(Gtk.Box):
                 event.button, event.time)
 
     def on_left_iconview_item_activated(self, iconview, path):
-        iconview.select_path(path)
-        model = iconview.get_model()
+        self.left_iconview.select_path(path)
+        model = self.left_iconview.get_model()
         pix, cat_id, title = model[path]
         self.curr_category = {'Pix': pix, 'Id': cat_id, 'Title': title, }
         self.right_liststore.clear()
@@ -167,8 +166,7 @@ class Playlist(Gtk.Box):
         self.cache_job.destroy()
 
     def on_right_treeview_row_activated(self, treeview, path, column):
-        self.curr_playing = int(str(path))
-        self.play_song()
+        self.play_song_at(int(str(path)))
     # signal handlers ends
 
     # 
@@ -272,3 +270,18 @@ class Playlist(Gtk.Box):
         song = song_row_to_dict(row)
         song['category'] = self.curr_category
         return song
+
+    def activate_iconview_item_with_cat_id(self, cat_id):
+        print('activate iconview item :', cat_id)
+        i = 0
+        for cate in self.left_liststore:
+            if cate[1] == cat_id:
+                break
+            i += 1
+        path = Gtk.TreePath(i)
+        self.on_left_iconview_item_activated(self.left_iconview, path)
+
+    def play_song_at(self, pos):
+        print('play song at:', pos)
+        self.curr_playing = pos
+        self.play_song()

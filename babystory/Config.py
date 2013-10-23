@@ -29,7 +29,10 @@ VERSION = '1.1'
 HOMEPAGE = 'https://github.com/LiuLang/babystory'
 AUTHORS = ['LiuLang <gsushzhsosgsu@gmail.com>',]
 COPYRIGHT = 'Copyright (c) 2013 LiuLang'
-DESCRIPTION = 'Baby Story is a '
+DESCRIPTION = 'Baby Story is '
+LONG_DESC = '''\
+
+'''
 
 HOME_DIR = os.path.expanduser('~')
 CACHE_DIR = os.path.join(HOME_DIR, '.cache', 'babystory')

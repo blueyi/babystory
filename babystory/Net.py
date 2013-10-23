@@ -157,6 +157,7 @@ class AsyncSong(GObject.GObject):
         self.force_quit = False
 
     def destroy(self):
+        print('Net.AsyncSong.destroy()')
         self.force_quit = True
 
     def get_song(self, song):
@@ -169,41 +170,9 @@ class AsyncSong(GObject.GObject):
                 song['Title'] + os.path.splitext(song['Url'])[1])
 
     def _download_song(self, song):
-        def _wrap(req):
-            received_size = 0
-            can_play_emited = False
-            content_length = int(req.headers.get('Content-Length'))
-            print('size of file: ', round(content_length / 2**20, 2), 'M')
-            fh = open(song_path, 'wb')
-
-            while True:
-                if self.force_quit:
-                    del req
-                    fh.close()
-                    os.remove(song_path)
-                    return False
-                chunk = req.read(CHUNK)
-                received_size += len(chunk)
-                percent = int(received_size/content_length * 100)
-                self.emit('chunk-received', percent)
-                #print('percentage:', percent)
-                # this signal only emit once.
-                if (received_size > CHUNK_TO_PLAY or percent > 40) \
-                        and not can_play_emited:
-                    print('song can be played now')
-                    can_play_emited = True
-                    self.emit('can-play', song_path, 'OK')
-                if not chunk:
-                    break
-                fh.write(chunk)
-
-            fh.close()
-            print('song downloaded')
-            self.emit('downloaded', song_path)
-            Utils.iconvtag(song_path, song)
-            return True
 
         song_link = song['Url']
+        print('Net.AsyncSong.song_link:', song_link)
         song_path = self.get_song_path(song)
 
         if os.path.exists(song_path):
@@ -220,9 +189,36 @@ class AsyncSong(GObject.GObject):
         for retried in range(MAXTIMES):
             try:
                 req = urllib.request.urlopen(song_link)
-                state = _wrap(req)
-                if state:
-                    return
+                received_size = 0
+                can_play_emited = False
+                content_length = int(req.headers.get('Content-Length'))
+                print('size: ', round(content_length / 2**20, 2), 'M')
+                fh = open(song_path, 'wb')
+
+                while True:
+                    if self.force_quit:
+                        del req
+                        os.remove(song_path)
+                        break
+                    chunk = req.read(CHUNK)
+                    received_size += len(chunk)
+                    percent = int(received_size/content_length * 100)
+                    self.emit('chunk-received', percent)
+                    #print('percentage:', percent)
+                    # this signal only emit once.
+                    if (received_size > CHUNK_TO_PLAY or percent > 40) \
+                            and not can_play_emited:
+                        print('song can be played now')
+                        can_play_emited = True
+                        self.emit('can-play', song_path, 'OK')
+                    if not chunk:
+                        break
+                    fh.write(chunk)
+                fh.close()
+                print('song downloaded')
+                self.emit('downloaded', song_path)
+                Utils.iconvtag(song_path, song)
+                return
             except Exception as e:
                 print('AsyncSong._download_song()', e, 'with song_link:',
                         song_link)
@@ -233,5 +229,5 @@ class AsyncSong(GObject.GObject):
         else:
             self.emit('can-play', song_path, 'FileNotFoundError')
         self.emit('downloaded', None)
-        return None
+        return
 GObject.type_register(AsyncSong)

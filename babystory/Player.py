@@ -159,6 +159,7 @@ class Player(Gtk.Toolbar):
         pass
 
     def do_destroy(self):
+        print('Player.do_destroy()')
         self.playbin.destroy()
         if self.async_song:
             self.async_song.destroy()
@@ -196,12 +197,12 @@ class Player(Gtk.Toolbar):
         self.seek(value)
 
     def on_volume_value_changed(self, volume, value):
-        self.set_volume(value)
+        self.set_volume(value ** 3)
 
     def on_home_button_toggled(self, button):
         if button.get_active():
             self.app.playlist.hide()
-            self.app.categories.show_all()
+            self.app.categories.show()
         else:
             self.app.categories.hide()
             self.app.playlist.show_all()
@@ -239,7 +240,7 @@ class Player(Gtk.Toolbar):
         self.load_next_cb()
 
     def on_playbin_error(self, widget, error_msg):
-        pass
+        self.load_next_cb()
 
 
     # player wrapper
@@ -254,7 +255,6 @@ class Player(Gtk.Toolbar):
         self.playbin.play()
         self.adj_timeout = GLib.timeout_add(250, self.sync_adjustment)
         if load:
-            self.init_meta()
             GLib.timeout_add(1500, self.init_adjustment)
 
     def pause_player(self):
@@ -266,6 +266,9 @@ class Player(Gtk.Toolbar):
 
     def stop_player(self):
         self.play_button.set_icon_name('media-playback-pause-symbolic')
+        self.scale.set_sensitive(True)
+        self.scale.set_fill_level(0)
+        self.scale.set_show_fill_level(False)
         self.playbin.stop()
         self.scale.set_value(0)
         self.scale.set_sensitive(False)
@@ -285,6 +288,7 @@ class Player(Gtk.Toolbar):
         self.curr_song = song
         self.update_window_title()
         self.stop_player()
+        self.scale.set_sensitive(False)
         self.scale.set_fill_level(0)
         self.scale.set_show_fill_level(True)
         self.async_song = Net.AsyncSong(self.app)
@@ -308,10 +312,9 @@ class Player(Gtk.Toolbar):
         self.playbin.seek(offset)
         self.sync_label_by_adjustment()
 
-    def set_volume(self, value):
-        mod_value = value ** 3
-        self.app.conf['volume'] = mod_value
-        self.playbin.set_volume(mod_value)
+    def set_volume(self, volume):
+        self.app.conf['volume'] = volume
+        self.playbin.set_volume(volume)
 
     def failed_to_download(self, song_path, status):
         print('Player.failed_to_download()')
@@ -330,8 +333,8 @@ class Player(Gtk.Toolbar):
 
     def on_song_can_play(self, widget, song_path, status):
         def _on_song_can_play():
-            self.scale.set_fill_level(0)
             self.scale.set_show_fill_level(False)
+            self.scale.set_fill_level(0)
 
             uri = 'file://' + song_path
             self.meta_url = uri
@@ -348,6 +351,7 @@ class Player(Gtk.Toolbar):
 
     def on_song_downloaded(self, widget, song_path):
         def _on_song_download():
+            self.scale.set_sensitive(True)
             self.init_adjustment()
             _repeat = self.repeat_btn.get_active()
             _shuffle = self.shuffle_btn.get_active()
@@ -356,11 +360,11 @@ class Player(Gtk.Toolbar):
             if self.next_song:
                 self.cache_next_song()
 
-        self.scale.set_sensitive(True)
         if song_path:
             GLib.idle_add(_on_song_download)
         else:
             #GLib.idle_add(self.failed_to_download, song_path)
+            self.load_next_cb()
             pass
 
     def cache_next_song(self):

@@ -49,7 +49,8 @@ class CatIconTab(Gtk.ScrolledWindow):
         iconview.set_pixbuf_column(0)
         iconview.set_text_column(2)
         iconview.props.item_width = 130
-        iconview.props.activate_on_single_click = True
+        if Gtk.MINOR_VERSION > 6:
+            iconview.props.activate_on_single_click = True
         iconview.connect('item-activated', self.on_iconview_item_activated)
         self.add(iconview)
 
@@ -110,16 +111,13 @@ class CatSongTab(Gtk.ScrolledWindow):
         self.liststore = Gtk.ListStore(int, str, str, str, str, str)
         treeview = Gtk.TreeView(model=self.liststore)
         self.add(treeview)
-        #treeview.props.headers_visible = False
+        treeview.props.headers_visible = False
+        treeview.connect('row-activated', self.on_treeview_row_activated)
 
         title_cell = Gtk.CellRendererText()
         title_col = Widgets.ExpandedTreeViewColumn('Title', title_cell,
                 text=1)
         treeview.append_column(title_col)
-
-#        format_cell = Gtk.CellRendererText()
-#        format_col = Gtk.TreeViewColumn('Format', format_cell, text=2)
-#        treeview.append_column(format_col)
 
         size_cell = Gtk.CellRendererText()
         size_col = Gtk.TreeViewColumn('Size', size_cell, text=3)
@@ -128,10 +126,6 @@ class CatSongTab(Gtk.ScrolledWindow):
         duration_cell = Gtk.CellRendererText()
         duration_col = Gtk.TreeViewColumn('Duration', duration_cell, text=4)
         treeview.append_column(duration_col)
-
-#        url_cell = Gtk.CellRendererText()
-#        url_col = Gtk.TreeViewColumn('Url', url_cell, text=5)
-#        treeview.append_column(url_col)
 
     def show_songs(self, cat_id):
         self.liststore.clear()
@@ -145,6 +139,16 @@ class CatSongTab(Gtk.ScrolledWindow):
                 song['Format'], Utils.print_size(song['Size']),
                 Utils.print_duration(song['Duration']), song['Url'], ])
         self.show_all()
+
+    def on_treeview_row_activated(self, treeview, path, column):
+        # add this cate to playlist
+        self.categories.on_add_button_clicked(None)
+        self.categories.app.playlist.activate_iconview_item_with_cat_id(
+                self.categories.song_tab.cat_id)
+        # starts to play song in path
+        #self.categories.app.playlist.show_category(
+                #self.categories.song_tab.cat_id)
+        self.categories.app.playlist.play_song_at(int(str(path)))
 
 
 class Categories(Gtk.Box):
@@ -232,7 +236,7 @@ class Categories(Gtk.Box):
         Config.dump_category_list(self.category_list)
 
     def on_add_button_clicked(self, button):
-        print('on add button clicked()')
+        print('on add button clicked. ', button)
         if len(self.song_tab.liststore) == 0:
             return
         self.app.playlist.append_category(self.song_tab.cat_id)
