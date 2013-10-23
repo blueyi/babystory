@@ -5,14 +5,17 @@
 # in http://www.gnu.org/licenses/gpl-3.0.html
 
 from gi.repository import GdkPixbuf
+from gi.repository import Gdk
 from gi.repository import Gtk
 import json
 import random
 
+from babystory.Cache import Cache
 from babystory import Config
 from babystory import Net
 from babystory import Utils
 from babystory import Widgets
+
 
 def song_row_to_dict(song_row, start=0):
     song = {
@@ -44,14 +47,26 @@ class Playlist(Gtk.Box):
 
         # icon, id, title, 
         self.left_liststore = Gtk.ListStore(GdkPixbuf.Pixbuf, int, str)
-        left_iconview = Gtk.IconView(model=self.left_liststore)
-        left_iconview.set_pixbuf_column(0)
-        left_iconview.set_text_column(2)
-        left_iconview.props.item_width = 130
-        #left_iconview.props.activate_on_single_click = True
-        left_iconview.connect('item-activated',
-                self.on_left_iconview_item_activated)
-        left_window.add(left_iconview)
+        self.left_iconview = Gtk.IconView(model=self.left_liststore)
+        self.left_iconview.set_pixbuf_column(0)
+        self.left_iconview.set_text_column(2)
+        self.left_iconview.props.item_width = 130
+        self.left_iconview.props.activate_on_single_click = True
+        self.left_iconview.connect('button-press-event',
+                self.on_left_iconview_button_pressed)
+        left_window.add(self.left_iconview)
+
+        self.left_menu = Gtk.Menu()
+        self.left_menu_delete = Gtk.MenuItem('Delete')
+        self.left_menu_delete.connect('activate',
+                self.on_left_menu_delete_activated)
+        self.left_menu.append(self.left_menu_delete)
+        sep_item = Gtk.SeparatorMenuItem()
+        self.left_menu.append(sep_item)
+        self.left_menu_cache = Gtk.MenuItem('Cache')
+        self.left_menu_cache.connect('activate',
+                self.on_left_menu_cache_activated)
+        self.left_menu.append(self.left_menu_cache)
 
         self.right_window = Gtk.ScrolledWindow()
         paned.add2(self.right_window)
@@ -85,10 +100,41 @@ class Playlist(Gtk.Box):
         for cat_id in self.playlist:
             self.show_category(cat_id)
 
+    # signal handlers starts
     def do_destroy(self):
         Config.dump_playlist(self.playlist)
 
+    def on_left_iconview_button_pressed(self, iconview, event):
+        if event.type != Gdk.EventType.BUTTON_PRESS:
+            return False
+        path = iconview.get_path_at_pos(event.x, event.y)
+        if path is None:
+            iconview.unselect_all()
+
+        if event.button == Gdk.BUTTON_PRIMARY:
+            if path is not None:
+                self.on_left_iconview_item_activated(iconview, path)
+            return True
+        elif event.button == Gdk.BUTTON_SECONDARY:
+            self.on_left_iconview_popup_menu(iconview, path, event)
+            return True
+        return False
+
+    def on_left_iconview_popup_menu(self, iconview, path, event):
+        self.left_menu.path = path
+        if path is not None:
+            self.on_left_iconview_item_activated(iconview, path)
+            self.left_menu_delete.set_label('Delete')
+            self.left_menu_cache.set_label('Cache')
+        else:
+            self.left_menu_delete.set_label('Delete All')
+            self.left_menu_cache.set_label('Cache All')
+        self.left_menu.show_all()
+        self.left_menu.popup(None, None, None, None,
+                event.button, event.time)
+
     def on_left_iconview_item_activated(self, iconview, path):
+        iconview.select_path(path)
         model = iconview.get_model()
         pix, cat_id, title = model[path]
         self.curr_category = {'Pix': pix, 'Id': cat_id, 'Title': title, }
@@ -101,10 +147,31 @@ class Playlist(Gtk.Box):
         for cat_id in self.playlist:
             self.append_to_song_liststore(cat_id)
 
+    def on_left_menu_delete_activated(self, menu_item):
+        path = self.left_menu.path
+        if path is None:
+            for cat_id in self.playlist:
+                self.remove_category(cat_id)
+            return
+        icon, cat_id, title = self.left_liststore[path]
+        self.remove_category(cat_id)
+
+    def on_left_menu_cache_activated(self, menu_item):
+        path = self.left_menu.path
+        if path is None:
+            _path = Gtk.TreePath(0)
+            self.left_iconview.select_path(_path)
+            self.on_left_iconview_item_activated(self.left_iconview, _path)
+        self.cache_job = Cache(self.app)
+        self.cache_job.run()
+        self.cache_job.destroy()
+
     def on_right_treeview_row_activated(self, treeview, path, column):
         self.curr_playing = int(str(path))
         self.play_song()
+    # signal handlers ends
 
+    # 
     def show_category(self, cat_id):
         category = self.app.categories.category_list[str(cat_id)]
         image_path = Net.get_image(category['IconUrl'])
@@ -121,8 +188,15 @@ class Playlist(Gtk.Box):
         self.show_category(cat_id)
 
     def remove_category(self, cat_id):
+        print('remove category()', cat_id, self.playlist)
+        if cat_id == -1:
+        # ignore the first one
+            return
+        index = self.playlist.index(cat_id)
+        path = Gtk.TreePath(index + 1)
+        _iter = self.left_liststore.get_iter(path)
+        self.left_liststore.remove(_iter)
         self.playlist.remove(cat_id)
-        # TODO:
 
     def append_to_song_liststore(self, cat_id):
         songs_wrap = Net.get_songs(cat_id)

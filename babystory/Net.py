@@ -14,6 +14,7 @@ import urllib.request
 import urllib.parse
 
 from babystory import Config
+from babystory import Utils
 
 GObject.threads_init()
 
@@ -199,7 +200,7 @@ class AsyncSong(GObject.GObject):
             fh.close()
             print('song downloaded')
             self.emit('downloaded', song_path)
-            #Utils.iconvtag(song_path, song)
+            Utils.iconvtag(song_path, song)
             return True
 
         song_link = song['Url']

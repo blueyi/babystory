@@ -49,6 +49,7 @@ class CatIconTab(Gtk.ScrolledWindow):
         iconview.set_pixbuf_column(0)
         iconview.set_text_column(2)
         iconview.props.item_width = 130
+        iconview.props.activate_on_single_click = True
         iconview.connect('item-activated', self.on_iconview_item_activated)
         self.add(iconview)
 

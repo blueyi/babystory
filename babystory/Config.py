@@ -25,7 +25,7 @@ locale.textdomain('babystory')
 _ = gettext.gettext
 
 APPNAME = _('Baby Story')
-VERSION = '1.0'
+VERSION = '1.1'
 HOMEPAGE = 'https://github.com/LiuLang/babystory'
 AUTHORS = ['LiuLang <gsushzhsosgsu@gmail.com>',]
 COPYRIGHT = 'Copyright (c) 2013 LiuLang'

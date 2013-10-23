@@ -150,11 +150,10 @@ class Player(Gtk.Toolbar):
         menu_btn.set_image(menu_image)
         menu_tool_item.add(menu_btn)
 
-        # init playbin and dbus
+        # init playbin
         self.playbin = PlayerBin()
         self.playbin.connect('eos', self.on_playbin_eos)
         self.playbin.connect('eos', self.on_playbin_error)
-        #self.dbus = PlayerDBus(self)
 
     def after_init(self):
         pass
@@ -177,7 +176,7 @@ class Player(Gtk.Toolbar):
 
     def on_next_button_clicked(self, button):
         if self.play_type == PlayType.SONG:
-            self.load_next()
+            self.load_next_cb()
 
     def on_repeat_button_clicked(self, button):
         if self.repeat_type == RepeatType.NONE:
@@ -237,7 +236,7 @@ class Player(Gtk.Toolbar):
 
     # playbin signal handlers
     def on_playbin_eos(self, *args):
-        self.load_next()
+        self.load_next_cb()
 
     def on_playbin_error(self, widget, error_msg):
         pass
@@ -251,7 +250,6 @@ class Player(Gtk.Toolbar):
             self.start_player()
 
     def start_player(self, load=False):
-        #self.dbus.set_Playing()
         self.play_button.set_icon_name('media-playback-pause-symbolic')
         self.playbin.play()
         self.adj_timeout = GLib.timeout_add(250, self.sync_adjustment)
@@ -260,7 +258,6 @@ class Player(Gtk.Toolbar):
             GLib.timeout_add(1500, self.init_adjustment)
 
     def pause_player(self):
-        #self.dbus.set_Pause()
         self.play_button.set_icon_name('media-playback-start-symbolic')
         self.playbin.pause()
         if self.adj_timeout > 0:
@@ -302,6 +299,9 @@ class Player(Gtk.Toolbar):
         _shuffle = self.shuffle_btn.get_active()
         self.app.playlist.play_next_song(repeat=_repeat, shuffle=_shuffle)
 
+    def load_next_cb(self):
+        GLib.idle_add(self.load_next)
+
     def seek(self, offset):
         if self.play_type == PlayType.NONE:
             return
@@ -339,7 +339,7 @@ class Player(Gtk.Toolbar):
             self.start_player(load=True)
 
         def _load_next():
-            self.load_next()
+            self.load_next_cb()
 
         if status == 'OK':
             GLib.idle_add(_on_song_can_play)
@@ -355,9 +355,6 @@ class Player(Gtk.Toolbar):
                     shuffle=_shuffle, repeat=_repeat)
             if self.next_song:
                 self.cache_next_song()
-            # update metadata in dbus
-            #self.dbus.update_meta()
-            #self.dbus.enable_seek()
 
         self.scale.set_sensitive(True)
         if song_path:
@@ -384,13 +381,12 @@ class Player(Gtk.Toolbar):
         if not status:
             return True
 
-        #self.dbus.update_pos(offset // 1000)
         status, duration = self.playbin.get_duration()
         self.adjustment.set_value(offset)
         self.adjustment.set_upper(duration)
         self.sync_label_by_adjustment()
         if offset >= duration - 800000000:
-            self.load_next()
+            self.load_next_cb()
             return False
         return True
 
@@ -402,7 +398,3 @@ class Player(Gtk.Toolbar):
     def update_window_title(self):
         self.app.window.set_title('{0} - {1}'.format(
             self.curr_song['Title'], self.curr_song['category']['Title']))
-
-    # support dbus
-    def init_meta(self):
-        pass

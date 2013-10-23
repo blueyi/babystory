@@ -35,3 +35,11 @@ def filesystem_error(parent, path):
             _('Please check {0} exists').format(path))
     dialog.run()
     dialog.destroy()
+
+class BoldLabel(Gtk.Label):
+    def __init__(self, label):
+        super().__init__('<b>{0}</b>'.format(label))
+        self.set_use_markup(True)
+        self.props.halign = Gtk.Align.START
+        self.props.xalign = 0
+        #self.props.margin_bottom = 10
