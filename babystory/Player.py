@@ -153,7 +153,7 @@ class Player(Gtk.Toolbar):
         # init playbin
         self.playbin = PlayerBin()
         self.playbin.connect('eos', self.on_playbin_eos)
-        self.playbin.connect('eos', self.on_playbin_error)
+        self.playbin.connect('error', self.on_playbin_error)
 
     def after_init(self):
         pass
@@ -298,7 +298,14 @@ class Player(Gtk.Toolbar):
         self.async_song.get_song(song)
 
     def load_next(self):
+        if self.play_type == PlayType.NONE:
+            return
         self.stop_player()
+        if self.repeat_type == RepeatType.ONE:
+            self.load(self.curr_song)
+            return
+        if self.next_song is None:
+            return
         _repeat = self.repeat_btn.get_active()
         _shuffle = self.shuffle_btn.get_active()
         self.app.playlist.play_next_song(repeat=_repeat, shuffle=_shuffle)
@@ -401,4 +408,4 @@ class Player(Gtk.Toolbar):
 
     def update_window_title(self):
         self.app.window.set_title('{0} - {1}'.format(
-            self.curr_song['Title'], self.curr_song['category']['Title']))
+            self.curr_song['Title'], self.curr_song['Category']))
