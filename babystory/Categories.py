@@ -13,6 +13,7 @@ from babystory import Net
 from babystory import Utils
 from babystory import Widgets
 
+_ = Config._
 
 class CatButton(Gtk.Button):
     def __init__(self, categories):
@@ -174,7 +175,7 @@ class Categories(Gtk.Box):
         self.right_label.props.margin_left = 4
         self.right_control_box.pack_start(self.right_label, False, False, 0)
 
-        self.add_button = Gtk.Button('Add to playlist')
+        self.add_button = Gtk.Button(_('Add to playlist'))
         self.add_button.set_relief(Gtk.ReliefStyle.NONE)
         self.add_button.connect('clicked', self.on_add_button_clicked)
         self.right_control_box.pack_end(self.add_button, False, False, 0)
@@ -190,14 +191,14 @@ class Categories(Gtk.Box):
         self.add_button.hide()
         self.song_tab = CatSongTab(self)
         self.song_tab.page_num = self.notebook.append_page(
-                self.song_tab, Gtk.Label('Songs'))
+                self.song_tab, Gtk.Label(_('Songs')))
 
         root_cat_tab = CatIconTab(self, '0')
         root_cat_tab.page_num = self.notebook.append_page(
-                root_cat_tab, Gtk.Label('Baby Story'))
+                root_cat_tab, Gtk.Label(_('Baby Story')))
         root_cat_tab.show_all()
 
-        self.right_label.set_text('Baby Stroy')
+        self.right_label.set_text(_('Baby Story'))
 
     def append_icon_tab(self, cat_id):
         cat_tab = CatIconTab(self, cat_id)

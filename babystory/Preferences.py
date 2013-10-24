@@ -7,7 +7,10 @@
 from gi.repository import Gtk
 import os
 
+from babystory import Config
 from babystory import Widgets
+
+_ = Config._
 
 class NoteTab(Gtk.Box):
     def __init__(self):
@@ -18,7 +21,7 @@ class NoteTab(Gtk.Box):
 class Preferences(Gtk.Dialog):
     def __init__(self, app):
         self.app = app
-        super().__init__('Preferences', app.window, 0,
+        super().__init__(_('Preferences'), app.window, 0,
                 (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE, ))
         self.set_modal(True)
         self.set_transient_for(app.window)
@@ -29,7 +32,7 @@ class Preferences(Gtk.Dialog):
         folder_box = NoteTab()
         box.pack_start(folder_box, False, False, 0)
 
-        folder_label = Widgets.BoldLabel('Place to store songs')
+        folder_label = Widgets.BoldLabel(_('Place to store songs'))
         folder_box.pack_start(folder_label, False, False, 0)
 
         folder_chooser_box = Gtk.Box()
@@ -55,7 +58,7 @@ class Preferences(Gtk.Dialog):
             self.app.conf['song-dir'] = new_dir
             return
 
-        dialog = Gtk.FileChooserDialog('Choose a Folder', self.app.window,
+        dialog = Gtk.FileChooserDialog(_('Choose a Folder'), self.app.window,
                 Gtk.FileChooserAction.SELECT_FOLDER,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                     Gtk.STOCK_OK, Gtk.ResponseType.OK))

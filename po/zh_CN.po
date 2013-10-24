@@ -1,0 +1,142 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2013 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# LiuLang <gsushzhsosgsu@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-24 20:05+0800\n"
+"PO-Revision-Date: 2013-10-24 19:56+0800\n"
+"Last-Translator: LiuLang <gsushzhsosgsu@gmail.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../babystory/Cache.py:33
+msgid "Caching job"
+msgstr "缓存工作"
+
+#: ../babystory/Cache.py:44 ../babystory/Cache.py:130
+msgid "Start Caching"
+msgstr "开始缓存"
+
+#: ../babystory/Cache.py:61
+msgid "Choose"
+msgstr "选择"
+
+#: ../babystory/Cache.py:72 ../babystory/Playlist.py:89
+msgid "Title"
+msgstr "名称"
+
+#: ../babystory/Cache.py:77
+msgid "Process"
+msgstr "进度"
+
+#: ../babystory/Cache.py:81 ../babystory/Playlist.py:94
+msgid "Size"
+msgstr "大小"
+
+#: ../babystory/Cache.py:85 ../babystory/Playlist.py:98
+msgid "Duration"
+msgstr "时间"
+
+#: ../babystory/Cache.py:122
+msgid "Finished"
+msgstr "已完成"
+
+#: ../babystory/Cache.py:126
+msgid "Stop Caching"
+msgstr "停止缓存"
+
+#: ../babystory/Categories.py:178
+msgid "Add to playlist"
+msgstr "加入到播入列表"
+
+#: ../babystory/Categories.py:194
+msgid "Songs"
+msgstr "歌曲"
+
+#: ../babystory/Categories.py:198 ../babystory/Categories.py:201
+#: ../babystory/Config.py:27
+msgid "Baby Story"
+msgstr "宝贝故事"
+
+#: ../babystory/Player.py:54
+msgid "Previous"
+msgstr "前一首"
+
+#: ../babystory/Player.py:60
+msgid "Play"
+msgstr "播放"
+
+#: ../babystory/Player.py:66
+msgid "Next"
+msgstr "下一首"
+
+#: ../babystory/Player.py:75
+msgid "Shuffle"
+msgstr "随机播放"
+
+#: ../babystory/Player.py:81
+msgid "Repeat"
+msgstr "重播"
+
+#: ../babystory/Player.py:112
+msgid "Home"
+msgstr "播放列表"
+
+#: ../babystory/Player.py:123 ../babystory/Preferences.py:24
+msgid "Preferences"
+msgstr "首选项"
+
+#: ../babystory/Player.py:129
+msgid "About"
+msgstr "关于"
+
+#: ../babystory/Player.py:133
+msgid "Quit"
+msgstr "退出"
+
+#: ../babystory/Player.py:326
+msgid "Failed to download song"
+msgstr "下载歌曲失败"
+
+#: ../babystory/Playlist.py:65 ../babystory/Playlist.py:134
+msgid "Cache"
+msgstr "缓存"
+
+#: ../babystory/Playlist.py:71 ../babystory/Playlist.py:133
+msgid "Delete"
+msgstr "删除"
+
+#: ../babystory/Playlist.py:136
+msgid "Delete All"
+msgstr "全部删除"
+
+#: ../babystory/Playlist.py:137
+msgid "Cache All"
+msgstr "全部缓存"
+
+#: ../babystory/Preferences.py:35
+msgid "Place to store songs"
+msgstr "存放歌曲的位置"
+
+#: ../babystory/Preferences.py:61
+msgid "Choose a Folder"
+msgstr "选择一个文件夹"
+
+#: ../babystory/Widgets.py:25
+msgid "Please check network connection and try again"
+msgstr "请检查网络状况, 然后重试"
+
+#: ../babystory/Widgets.py:30
+msgid "Failed to open file or direcotry"
+msgstr "无法打开这个文件/目录"
+
+#: ../babystory/Widgets.py:35
+#, python-brace-format
+msgid "Please check {0} exists"
+msgstr "请检查 {0} 是否存在"
