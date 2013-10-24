@@ -109,7 +109,7 @@ class Player(Gtk.Toolbar):
         scale_box.pack_start(self.volume, False, False, 0)
 
         home_button = Gtk.ToggleToolButton()
-        home_button.set_label('Home')
+        home_button.set_label(_('Home'))
         home_button.set_icon_name('user-home-symbolic')
         home_button.set_active(True)
         home_button.set_tooltip_text('Show playlist or category list')
@@ -346,7 +346,7 @@ class Player(Gtk.Toolbar):
 
         if status == 'OK':
             GLib.idle_add(_on_song_can_play)
-        elif status == 'URLError':
+        elif status in ('URLError', 'FileNotFoundError'):
             GLib.idle_add(self.failed_to_download, song_path, status)
 
     def on_song_downloaded(self, widget, song_path):
