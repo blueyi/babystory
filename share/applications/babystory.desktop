@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Baby Story
+GenericName=Baby Story
+Name[zh_CN]=宝宝故事
+GenericName[zh_CN]=宝宝故事
+Comment=Play music and stories for babies
+Exec=kwplayer.py
+Icon=kwplayer
+Terminal=false
+Type=Application
+Categories=AudioVideo;Player;

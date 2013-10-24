@@ -25,13 +25,12 @@ locale.textdomain('babystory')
 _ = gettext.gettext
 
 APPNAME = _('Baby Story')
-VERSION = '1.1'
+VERSION = '1.2'
 HOMEPAGE = 'https://github.com/LiuLang/babystory'
 AUTHORS = ['LiuLang <gsushzhsosgsu@gmail.com>',]
 COPYRIGHT = 'Copyright (c) 2013 LiuLang'
-DESCRIPTION = 'Baby Story is '
+DESCRIPTION = _('Playing music and stories for babies')
 LONG_DESC = '''\
-
 '''
 
 HOME_DIR = os.path.expanduser('~')

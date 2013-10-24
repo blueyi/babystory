@@ -6,8 +6,8 @@
 # in http://www.gnu.org/licenses/gpl-3.0.html
 
 # Distutils script for babystory
-
 from distutils.core import setup
+import os
 
 from babystory import Config
 
