@@ -8,6 +8,7 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 import json
 import os
+import shutil
 import threading
 import urllib.error
 import urllib.request
@@ -103,6 +104,8 @@ def get_hot_songs(cat_id, num_of_songs=20):
     return query(param)
 
 def get_image(url):
+    if len(url) < 10:
+        return None
     img_name = os.path.split(url)[1]
     img_path = os.path.join(Config.IMG_DIR, img_name)
     if os.path.exists(img_path):
@@ -127,6 +130,10 @@ def update_liststore_image(liststore, path, col, url):
 
     async_call(get_image, _update_image, url)
 
+def get_song_path(app, song):
+    return os.path.join(app.conf['song-dir'],
+            song['Category'],
+            song['Title'] + os.path.splitext(song['Url'])[1])
 
 class AsyncSong(GObject.GObject):
     '''
@@ -164,16 +171,12 @@ class AsyncSong(GObject.GObject):
         print('AsyncSong.get_song()')
         async_call(self._download_song, empty_func, song)
 
-    def get_song_path(self, song):
-        return os.path.join(self.app.conf['song-dir'],
-                song['category']['Title'],
-                song['Title'] + os.path.splitext(song['Url'])[1])
-
     def _download_song(self, song):
 
         song_link = song['Url']
         print('Net.AsyncSong.song_link:', song_link)
-        song_path = self.get_song_path(song)
+        song_path = get_song_path(self.app, song)
+        print('song path:', song_path)
 
         if os.path.exists(song_path):
             print('local song exists, signals will be emited:', song_path)
@@ -199,7 +202,9 @@ class AsyncSong(GObject.GObject):
                     if self.force_quit:
                         del req
                         os.remove(song_path)
-                        break
+                        self.emit('can-play', song_path, 'InterruptedError')
+                        self.emit('downloaded', None)
+                        return
                     chunk = req.read(CHUNK)
                     received_size += len(chunk)
                     percent = int(received_size/content_length * 100)
