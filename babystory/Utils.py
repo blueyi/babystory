@@ -45,7 +45,7 @@ def iconvtag(song_path, song):
         id3.delete(song_path)
         audio = id3.ID3()
         audio.add(id3.TIT2(encoding=3, text=song['Title']))
-        audio.add(id3.TALB(encoding=3, text=song['category']['Title']))
+        audio.add(id3.TALB(encoding=3, text=song['Category']))
         audio.save(song_path)
 
     ext = os.path.splitext(song_path)[1].lower()
