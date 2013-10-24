@@ -36,6 +36,6 @@ if __name__ == '__main__':
         author_email = 'gsushzhsosgsu@gmail.com',
 
         packages = ['babystory', ],
-        scripts = ['babystory.py', ],
+        scripts = ['babystory-bin', ],
         data_files = build_data_files(),
         )
