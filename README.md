@@ -63,6 +63,7 @@ SCREENSHOTS
 COPYRIGHT
 =========
 `Copyright (C) 2013 LiuLang <gsushzhsosgsu@gmail.com>`
+
 软件本身使用 GNU Plublic License v3协议发布, 协议内容请参看LICENSE文件.
 
 本人不存储任何多媒体资源供其他人下载, 软件会从网络中下载文件.
