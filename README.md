@@ -51,6 +51,14 @@ Arch Linux系的话, 大概是这样的:
 * 安装: `# pip3 install babystory`
 * 更新: `# pip3 iinstall upgrade babystory`
 
+SCREENSHOTS
+===========
+专辑分类:
+<img src="screenshots/categories.jpg?raw=true" title="专辑分类" />
+
+播放列表:
+<img src="screenshots/playlists.jpg?raw=true" title="播放列表" />
+
 
 COPYRIGHT
 =========
