@@ -31,8 +31,8 @@ class CatButton(Gtk.Button):
         cat_buttons = button_box.get_children()
         index = cat_buttons.index(self)
 
-        self.categories.popup(cat_tabs[index])
-        for tab in cat_tabs[index+2:]:
+        self.categories.popup_page(cat_tabs[index])
+        for tab in cat_tabs[index+1:]:
             notebook.remove(tab)
 
         self.categories.right_label.set_text(cat_buttons[index].get_label())
@@ -205,7 +205,7 @@ class Categories(Gtk.Box):
         cat_title = self.category_list[str(cat_id)]['Title']
         cat_tab.page_num = self.notebook.append_page(
             cat_tab, Gtk.Label(cat_title))
-        self.popup(cat_tab)
+        self.popup_page(cat_tab)
         self.push_button(cat_id)
 
     def remove_icon_tab(self):
@@ -216,7 +216,7 @@ class Categories(Gtk.Box):
         self.push_button(cat_id)
         self.song_tab.show_songs(cat_id)
         self.song_tab.cat_id = cat_id
-        self.popup(self.song_tab)
+        self.popup_page(self.song_tab)
 
     def push_button(self, cat_id):
         cat_title = self.category_list[str(cat_id)]['Title']
@@ -228,7 +228,7 @@ class Categories(Gtk.Box):
     def pop_button(self):
         pass
 
-    def popup(self, widget):
+    def popup_page(self, widget):
         widget.show_all()
         self.notebook.set_current_page(widget.page_num)
 
