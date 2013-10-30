@@ -248,7 +248,6 @@ class Playlist(Gtk.Box):
         else:
             path = path + 1
         self.next_playing = path
-        print(self.curr_playing, self.prev_playing, self.next_playing)
         return self.get_song_from_index(self.next_playing)
 
     def play_prev_song(self, repeat=False, shuffle=False):

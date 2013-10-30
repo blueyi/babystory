@@ -8,4 +8,4 @@ Exec=babystory-bin
 Icon=babystory
 Terminal=false
 Type=Application
-Categories=AudioVideo;Player;
+Categories=Education;
